@@ -1,4 +1,4 @@
-import express from "express"
+import express, { query } from "express"
 import mysql from "mysql"
 import cors from "cors"
 
@@ -45,6 +45,16 @@ app.post("/emissions_event",(req,res)=>{
     })
 })
 
+app.delete("/emissions_event/:EmissionsID", (req,res)=>{
+    const Emissionid = req.params.EmissionsID;
+    const q = "DELETE from emissions_event WHERE EmissionsID = ?";
+
+    db.query(q,[Emissionid], (err,data)=>{
+        if(err) return res.json(err)
+        return res.json("Emissions event has been created")
+    })
+
+})
 app.listen(3656,()=>{
     console.log("Connected to Backend!")
 
