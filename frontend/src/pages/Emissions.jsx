@@ -40,15 +40,16 @@ const Emissions = () => {
             <h2>{Emission.UserID}</h2>
             <h2>{Emission.SourceID}</h2>
             <h2>{Emission.Longitude}</h2>
-            <h2>{Emission.Latitiude}</h2>
+            <h2>{Emission.Latitude}</h2>
             <button className="delete" onClick ={()=>handleDelete(Emission.EmissionsID)}>Delete</button>
-            <button className="update">Update</button>
+            <button className="update"><Link to ={`EditEmission/${Emission.EmissionsID}`} >Edit</Link></button>
             </div>
         )
 )}
     </div><div className="row"> 
     <button className = "button"><Link to="/AddEmissions">Add Emission</Link></button>
     <button className = "button"><Link to="/SearchEmissions">Search Emissions</Link></button>
+    <button className = "button"><Link to="/">Back</Link></button>
     </div></div>
 }
 export default Emissions

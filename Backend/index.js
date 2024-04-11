@@ -19,6 +19,8 @@ app.use(cors())
 app.get("/",(req,res)=>{
     res.json("Hello from backend")
 })
+//Emissions Management
+//Retreive Emissions data
 app.get("/emissions_event",(req,res)=>{
     const q = "SELECT * FROM emissions_event"
     db.query(q,(err,data)=>{
@@ -26,22 +28,109 @@ app.get("/emissions_event",(req,res)=>{
         return res.json(data)
     })
 })
+//Send Emissions Data
+app.post("/emissions_event",(req,res)=>{
+    const q = "INSERT INTO emissions_event (`EmissionsID`,`Size`,`Date`,`Country Name`,`DeviceID`, `UserID`,`SourceID`,`Longitude`,`Latitude`) VALUES (?)"
+    const values = [
+        req.body.EmissionsID,
+        req.body.Size,
+        req.body.Date,
+        req.body.Country_Name,
+        req.body.DeviceID,
+        req.body.UserID,
+        req.body.SourceID,
+        req.body.Longitude,
+        req.body.Latitude,
+
+    ];
+    db.query(q,[values],(err,data)=>{
+        if(err) return res.json(err)
+        return res.json("Emissions event has been created")
+    })
+})
+//Delete Emissions Data
+app.delete("/emissions_event/:EmissionsID", (req,res)=>{
+    const Emissionid = req.params.EmissionsID;
+    const q = "DELETE from emissions_event WHERE EmissionsID = ?";
+
+    db.query(q,[Emissionid], (err,data)=>{
+        if(err) return res.json(err)
+        return res.json("Emissions event has been created")
+    })
+
+})
+//Edit Emissions Data
+app.put("/emissions_event/:EmissionsID", (req,res)=>{
+    const Emissionid = req.params.EmissionsID;
+    const q = "UPDATE emissions_event SET `Size`=?, `Date`=?, `Country Name`=?, `DeviceID`=?, `UserID`=?, `SourceID`=?, `Longitude`=?, `Latitude`=?  WHERE `EmissionsID`=?";
+    const values = [
+        req.body.Size,
+        req.body.Date,
+        req.body.Country_Name,
+        req.body.DeviceID,
+        req.body.UserID,
+        req.body.SourceID,
+        req.body.Longitude,
+        req.body.Latitude,
+    ]
+
+    db.query(q,[...values, Emissionid], (err,data)=>{
+        if(err) return res.json(err)
+        return res.json("Emissions event has been updated")
+    })
+
+})
+//User Management
+//Retrieve User Info
+app.get("/user",(req,res)=>{
+    const q = "SELECT * FROM user"
+    db.query(q,(err,data)=>{
+        if(err) return res.json(err)
+        return res.json(data)
+    })
+})
+//Add User
+app.post("/user",(req,res)=>{
+    const q = "INSERT INTO user (`UserID`, `Username`, `Password`, `Email`, `UserType`) VALUES (?)"
+    const values = [
+        req.body.UserID,
+        req.body.Username,
+        req.body.Password,
+        req.body.Email,
+        req.body.UserType,
+    ];
+    db.query(q,[values],(err,data)=>{
+        if(err) return res.json(err)
+        return res.json("User has been created")
+    })
+})
+//Delete User
+app.delete("/user/:UserID", (req,res)=>{
+    const Userid = req.params.UserID;
+    const q = "DELETE from user WHERE UserID = ?";
+
+    db.query(q,[Userid], (err,data)=>{
+        if(err) return res.json(err)
+        return res.json("User has been deleted")
+    })
+
+})
 
 // User Management
 // Add User
-app.post("/user/add", async (req, res) => {
-    const { Username, Password, Email, UserType } = req.body;
-    const hashedPassword = await bcrypt.hash(Password, 10);
-
-    db.query(
-        "INSERT INTO User (Username, Password, Email, UserType) VALUES (?, ?, ?, ?)",
-        [Username, hashedPassword, Email, UserType],
-        (err, result) => {
-            if (err) return res.status(500).json(err.message);
-            return res.json("User registration successful");
-        }
-    );
-});
+//app.post("/user", async (req, res) => {
+//    const { Username, Password, Email, UserType } = req.body;
+//    const hashedPassword = await bcrypt.hash(Password, 10);
+//
+//    db.query(
+//        "INSERT INTO User (Username, Password, Email, UserType) VALUES (?, ?, ?, ?)",
+//        [Username, hashedPassword, Email, UserType],
+//        (err, result) => {
+//            if (err) return res.status(500).json(err.message);
+//            return res.json("User registration successful");
+//        }
+//    );
+//});
 
 // Authenticate User
 app.post("/user/authenticate", (req, res) => {
@@ -306,16 +395,7 @@ app.get("/report/export", (req, res) => {
     });
 });
 
-app.delete("/emissions_event/:EmissionsID", (req,res)=>{
-    const Emissionid = req.params.EmissionsID;
-    const q = "DELETE from emissions_event WHERE EmissionsID = ?";
 
-    db.query(q,[Emissionid], (err,data)=>{
-        if(err) return res.json(err)
-        return res.json("Emissions event has been created")
-    })
-
-})
 app.listen(3656,()=>{
     console.log("Connected to Backend!")
 

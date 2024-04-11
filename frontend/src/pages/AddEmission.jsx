@@ -1,28 +1,12 @@
 import React from "react"
 import {useState} from "react"
-import {useEffect} from "react"
 import axios from "axios"
 import {useNavigate} from "react-router-dom"
 
 
 const AddEmissions = () => {
-    const [Emissions,setEmissions]=useState([])
-
-    useEffect(()=>{
-        const FetchAllEmissions = async ()=>{
-            try{
-                const res = await axios.get("http://localhost:3656/emissions_event")
-                setEmissions(res.data)
-            }catch(err){
-                console.log(err)
-            }
-        }
-        FetchAllEmissions()
-    },[])
-   
    
     const[Emission,setEmission] = useState({
-        EmissionsID:Emissions.length,
         Size: null,
         Date:null,
         Country_Name:"",
