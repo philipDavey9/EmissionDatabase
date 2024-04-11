@@ -1,8 +1,8 @@
 import {BrowserRouter, Routes,Route,} from "react-router-dom";
-import EditEmissions from "./pages/EditEmission";
 import SearchEmissions from "./pages/SearchEmission";
 import AddEmissions from "./pages/AddEmission";
 import Emissions from "./pages/Emissions";
+import "./style.css";
 
 function App() {
   return (
@@ -11,7 +11,6 @@ function App() {
       <Routes>
         <Route path="/Emissions" element={<Emissions/>}/>
         <Route path="/AddEmissions" element={<AddEmissions/>}/>
-        <Route path="/EditEmissions" element={<EditEmissions/>}/>
         <Route path="/SearchEmissions" element={<SearchEmissions/>}/>
       </Routes>
     </BrowserRouter>
