@@ -116,23 +116,7 @@ app.delete("/user/:UserID", (req,res)=>{
 
 })
 
-// User Management
-// Add User
-//app.post("/user", async (req, res) => {
-//    const { Username, Password, Email, UserType } = req.body;
-//    const hashedPassword = await bcrypt.hash(Password, 10);
-//
-//    db.query(
-//        "INSERT INTO User (Username, Password, Email, UserType) VALUES (?, ?, ?, ?)",
-//        [Username, hashedPassword, Email, UserType],
-//        (err, result) => {
-//            if (err) return res.status(500).json(err.message);
-//            return res.json("User registration successful");
-//        }
-//    );
-//});
-
-// Authenticate User
+// Authenticate User (not currently implemented on frontend)
 app.post("/user/authenticate", (req, res) => {
     const { Username, Password } = req.body;
 
@@ -153,109 +137,126 @@ app.post("/user/authenticate", (req, res) => {
 });
 
 // Edit User
-app.put("/user/edit", (req, res) => {
-    const { UserID, Username, Email, UserType } = req.body;
+app.put("/user/:UserID", (req,res)=>{
+    const Userid = req.params.UserID;
+    const q = "UPDATE user SET `Username`= ?, `Password`=?, `Email`=?, `UserType`=?  WHERE `UserID`=?";
+    const values = [
+        req.body.Username,
+        req.body.Password,
+        req.body.Email,
+        req.body.UserType,
+    ]
+    db.query(q,[...values, Userid], (err,data)=>{
+        if(err) return res.json(err)
+        return res.json("User has been updated")
+    })
 
-    db.query(
-        "UPDATE User SET Username = ?, Email = ?, UserType = ? WHERE UserID = ?",
-        [Username, Email, UserType, UserID],
-        (err, result) => {
-            if (err) return res.status(500).json(err.message);
-            return res.json("User update successful");
-        }
-    );
-});
-
-// Delete User
-app.delete("/user/delete", (req, res) => {
-    const { UserID } = req.body;
-
-    db.query("DELETE FROM User WHERE UserID = ?", [UserID], (err, result) => {
-        if (err) return res.status(500).json(err.message);
-        return res.json("User deletion successful");
-    });
-});
+})
 
 // System Administration
 // Manage Gas Type
-// Add Gas Type
-app.post("/gasType/add", (req, res) => {
-    const { ChemicalFormula, GasName, GlobalWarmingPotential } = req.body;
-    db.query(
-        "INSERT INTO GasType (ChemicalFormula, GasName, GlobalWarmingPotential) VALUES (?, ?, ?)",
-        [ChemicalFormula, GasName, GlobalWarmingPotential],
-        (err, result) => {
-            if (err) return res.status(500).json(err.message);
-            res.json("Gas type added successfully");
-        }
-    );
-});
+//Retreive Gas data
+app.get("/gastype",(req,res)=>{
+    const q = "SELECT * FROM gastype"
+    db.query(q,(err,data)=>{
+        if(err) return res.json(err)
+        return res.json(data)
+    })
+})
+//Send gas type Data
+app.post("/gastype",(req,res)=>{
+    const q = "INSERT INTO gastype (`ChemicalFormula`, `GasName`, `GlobalWarmingPotential`) VALUES (?)"
+    const values = [
+        req.body.ChemicalFormula,
+        req.body.GasName,
+        req.body.GlobalWarmingPotential,
+    ];
+    db.query(q,[values],(err,data)=>{
+        if(err) return res.json(err)
+        return res.json("New Gas type has been created")
+    })
+})
 
-// Edit Gas Type
-app.put("/gasType/edit", (req, res) => {
-    const { ChemicalFormula, GasName, GlobalWarmingPotential } = req.body;
-    db.query(
-        "UPDATE GasType SET GasName = ?, GlobalWarmingPotential = ? WHERE ChemicalFormula = ?",
-        [GasName, GlobalWarmingPotential, ChemicalFormula],
-        (err, result) => {
-            if (err) return res.status(500).json(err.message);
-            res.json("Gas type updated successfully");
-        }
-    );
-});
+// Edit Gas
+app.put("/gastype/:ChemicalFormula", (req,res)=>{
+    const Gasid = req.params.ChemicalFormula;
+    const q = "UPDATE gastype SET `GasName`=?, `GlobalWarmingPotential`=?  WHERE `ChemicalFormula`=?";
+    const values = [
+        req.body.GasName,
+        req.body.GlobalWarmingPotential,
+    ]
+    db.query(q,[...values, Gasid], (err,data)=>{
+        if(err) return res.json(err)
+        return res.json("Gas has been updated")
+    })
 
-// Delete Gas Type
-app.delete("/gasType/delete", (req, res) => {
-    const { ChemicalFormula } = req.body;
-    db.query(
-        "DELETE FROM GasType WHERE ChemicalFormula = ?",
-        [ChemicalFormula],
-        (err, result) => {
-            if (err) return res.status(500).json(err.message);
-            res.json("Gas type deleted successfully");
-        }
-    );
-});
+})
+
+//Delete Gas Data
+app.delete("/gastype/:ChemicalFormula", (req,res)=>{
+    const Gasid = req.params.ChemicalFormula;
+    const q = "DELETE from gastype WHERE ChemicalFormula = ?";
+
+    db.query(q,[Gasid], (err,data)=>{
+        if(err) return res.json(err)
+        return res.json("Gas data has been created")
+    })
+
+})
 
 // Manage Devices
-// Add Device
-app.post("/device/add", (req, res) => {
-    const { Type, Manufacturer, DetectionThreshold, Resolution } = req.body;
-    db.query(
-        "INSERT INTO Device (Type, Manufacturer, DetectionThreshold, Resolution) VALUES (?, ?, ?, ?)",
-        [Type, Manufacturer, DetectionThreshold, Resolution],
-        (err, result) => {
-            if (err) return res.status(500).json(err.message);
-            res.json("Device added successfully");
-        }
-    );
-});
+//Retreive Device data
+app.get("/device",(req,res)=>{
+    const q = "SELECT * FROM device"
+    db.query(q,(err,data)=>{
+        if(err) return res.json(err)
+        return res.json(data)
+    })
+})
+//Send device Data
+app.post("/device",(req,res)=>{
+    const q = "INSERT INTO device (`DeviceID`,`Type`,`Manufacturer`,`DetectionThreshold`,`Resolution`) VALUES (?)"
+    const values = [
+        req.body.DeviceID,
+        req.body.Type,
+        req.body.Manufacturer,
+        req.body.DetectionThreshold,
+        req.body.Resolution,
+    ];
+    db.query(q,[values],(err,data)=>{
+        if(err) return res.json(err)
+        return res.json("New device has been created")
+    })
+})
 
 // Edit Device
-app.put("/device/edit", (req, res) => {
-    const { DeviceID, Type, Manufacturer, DetectionThreshold, Resolution } = req.body;
-    db.query(
-        "UPDATE Device SET Type = ?, Manufacturer = ?, DetectionThreshold = ?, Resolution = ? WHERE DeviceID = ?",
-        [Type, Manufacturer, DetectionThreshold, Resolution, DeviceID],
-        (err, result) => {
-            if (err) return res.status(500).json(err.message);
-            res.json("Device updated successfully");
-        }
-    );
-});
+app.put("/device/:DeviceID", (req,res)=>{
+    const Deviceid = req.params.DeviceID;
+    const q = "UPDATE device SET `Type`= ?, `Manufacturer`=?, `DetectionThreshold`=?, `Resolution`=?  WHERE `DeviceID`=?";
+    const values = [
+        req.body.Type,
+        req.body.Manufacturer,
+        req.body.DetectionThreshold,
+        req.body.Resolution,
+    ]
+    db.query(q,[...values, Deviceid], (err,data)=>{
+        if(err) return res.json(err)
+        return res.json("Device has been updated")
+    })
 
-// Delete Device
-app.delete("/device/delete", (req, res) => {
-    const { DeviceID } = req.body;
-    db.query(
-        "DELETE FROM Device WHERE DeviceID = ?",
-        [DeviceID],
-        (err, result) => {
-            if (err) return res.status(500).json(err.message);
-            res.json("Device deleted successfully");
-        }
-    );
-});
+})
+
+//Delete Devie Data
+app.delete("/device/:DeviceID", (req,res)=>{
+    const Deviceid = req.params.DeviceID;
+    const q = "DELETE from device WHERE DeviceID = ?";
+
+    db.query(q,[Deviceid], (err,data)=>{
+        if(err) return res.json(err)
+        return res.json("Device has been created")
+    })
+
+})
 
 // Manage Sites
 // Add Site
@@ -298,47 +299,58 @@ app.delete("/site/delete", (req, res) => {
 });
 
 // Manage Sources
-// Add Source
-app.post("/source/add", (req, res) => {
-    const { SourceName, Subclass } = req.body;
-    db.query(
-        "INSERT INTO Source (SourceName, Subclass) VALUES (?, ?)",
-        [SourceName, Subclass],
-        (err, result) => {
-            if (err) return res.status(500).json(err.message);
-            res.json("Source added successfully");
-        }
-    );
-});
+//Retreive Source data
+app.get("/source",(req,res)=>{
+    const q = "SELECT * FROM source"
+    db.query(q,(err,data)=>{
+        if(err) return res.json(err)
+        return res.json(data)
+    })
+})
+//Send gas type Data
+app.post("/source",(req,res)=>{
+    const q = "INSERT INTO source (`SourceID`,`SourceName`,`Subclass`) VALUES (?)"
+    const values = [
+        req.body.SourceID,
+        req.body.SourceName,
+        req.body.Subclass,
+    ];
+    db.query(q,[values],(err,data)=>{
+        if(err) return res.json(err)
+        return res.json("New source has been created")
+    })
+})
 
 // Edit Source
-app.put("/source/edit", (req, res) => {
-    const { SourceID, SourceName, Subclass } = req.body;
-    db.query(
-        "UPDATE Source SET SourceName = ?, Subclass = ? WHERE SourceID = ?",
-        [SourceName, Subclass, SourceID],
-        (err, result) => {
-            if (err) return res.status(500).json(err.message);
-            res.json("Source updated successfully");
-        }
-    );
-});
+app.put("/source/:SourceID", (req,res)=>{
+    const Sourceid = req.params.SourceID;
+    const q = "UPDATE source SET `SourceName`= ?, `Subclass`=? WHERE `SourceID`=?";
+    const values = [
+        req.body.SourceName,
+        req.body.Subclass
+    ]
+    db.query(q,[...values, Sourceid], (err,data)=>{
+        if(err) return res.json(err)
+        return res.json("Source has been updated")
+    })
 
-// Delete Source
-app.delete("/source/delete", (req, res) => {
-    const { SourceID } = req.body;
-    db.query(
-        "DELETE FROM Source WHERE SourceID = ?",
-        [SourceID],
-        (err, result) => {
-            if (err) return res.status(500).json(err.message);
-            res.json("Source deleted successfully");
-        }
-    );
-});
+})
+
+//Delete Sources Data
+app.delete("/source/:SourceID", (req,res)=>{
+    const Sourceid = req.params.SourceID;
+    const q = "DELETE from source WHERE SourceID = ?";
+
+    db.query(q,[Sourceid], (err,data)=>{
+        if(err) return res.json(err)
+        return res.json("Source has been Deleted")
+    })
+
+})
 
 // Reporting
 // Generate Report
+//not implemented or tested
 app.get("/report/generate", (req, res) => {
     const { ReportType, StartDate, EndDate } = req.query;
 

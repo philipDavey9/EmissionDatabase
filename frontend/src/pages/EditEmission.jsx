@@ -3,6 +3,7 @@ import {useState} from "react"
 import axios from "axios"
 import {useNavigate} from "react-router-dom"
 import {useLocation} from "react-router-dom"
+import {Link} from "react-router-dom"
 
 
 const EditEmission = () => {
@@ -44,6 +45,7 @@ const EditEmission = () => {
         <input type="number" placeholder = "Longitude" onChange = {handleEmission} name ="Longitude"/>
         <input type="number" placeholder = "Latitude"  onChange = {handleEmission} name ="Latitude"/>
         <button onClick={handleClick}>Update</button>
+        <button className = "button"><Link to="/Emissions">Back</Link></button>
     </div>
 }
 export default EditEmission;

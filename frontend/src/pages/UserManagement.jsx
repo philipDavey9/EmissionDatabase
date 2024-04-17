@@ -37,7 +37,7 @@ const UserManagement = () => {
             <h2>{User.Email}</h2>
             <h2>{User.UserType}</h2>
             <button className="delete" onClick ={()=>handleDelete(User.UserID)}>Delete</button>
-            <button className="update"><Link to ={`EditEmission/${User.UserID}`} >Edit</Link></button>
+            <button className="update"><Link to ={`EditUser/${User.UserID}`} >Edit</Link></button>
             </div>
         )
 )}
